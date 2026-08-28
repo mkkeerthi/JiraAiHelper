@@ -1,10 +1,8 @@
 ---
-name: jira-requirement-analyzer
+name: JIRA Requirement Analyser
 description: >-
-  Read a JIRA ticket and judge whether it is actually ready to test. Use when a
-  tester says "analyze this ticket", "is this story ready to test", "find gaps in
-  JIRA-123", or pastes a user story / acceptance criteria and wants it pressure-tested.
-  Fetches the ticket, scores it against a readiness checklist, and returns a
+  For JIRA ticket judge whether it is actually ready to test.
+  Fetches the ticket, scores it against a readiness checklist, and returns 
   gaps / ambiguities / risks report plus clarifying questions to send back to the author.
 ---
 
