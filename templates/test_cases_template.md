@@ -1,3 +1,10 @@
+---
+name: Test Case Generator
+description: >-
+  For JIRA ticket generate a traceable test case table based on the ticket's summary,
+  description and acceptance criteria, output in the required format by following said rules.
+---
+
 # Test Case Template
 
 Use the ticket details below to generate an enterprise-grade, traceable set of test cases.
