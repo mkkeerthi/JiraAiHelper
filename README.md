@@ -6,10 +6,10 @@ Groq-hosted LLMs. It has two modes:
 - **Generate Test Cases** — paste a Jira key (e.g. `QA-102`) and get an
   enterprise-grade, traceable test case table based on the ticket's summary,
   description and acceptance criteria.
-- **Analyse Requirement** — pressure-test whether a ticket is actually ready to
-  test: it scores the story, surfaces gaps / ambiguities / risks, and drafts
-  clarifying questions for the author. If Jira is unreachable, you can paste the
-  ticket body and analyse it anyway.
+- **Analyse Requirement** — paste a Jira key (e.g. `SCRUM-1`) to check whether 
+  a ticket is actually ready to test: it scores the story, surfaces gaps / 
+  ambiguities / risks, and drafts clarifying questions for the author. 
+  If Jira is unreachable, you can paste the ticket body and analyse it anyway.
 
 ## How it works
 
@@ -58,7 +58,7 @@ Groq-hosted LLMs. It has two modes:
      `yourcompany.atlassian.net`)
    - **Jira email** — the account email for your Jira Cloud site
    - **Jira API token** — create one at https://id.atlassian.com/manage-profile/security/api-tokens
-   - **Groq API key** — from https://console.groq.com/keys
+   - **Groq (free account) API key** — from https://console.groq.com/keys
 
 4. **Run the app**
 

@@ -1,11 +1,8 @@
 ---
-name: JIRA Requirement Analyser
+name: Test Case Generator
 description: >-
-  Read a JIRA ticket and judge whether it is actually ready to test. Use when a
-  tester says "analyze this ticket", "is this story ready to test", "find gaps in
-  JIRA-123", or pastes a user story / acceptance criteria and wants it pressure-tested.
-  Fetches the ticket, scores it against a readiness checklist, and returns a
-  gaps / ambiguities / risks report plus clarifying questions to send back to the author.
+  Read a JIRA ticket and generate a traceable test case table based on the ticket's summary,
+  description and acceptance criteria, output in the required format by following said rules.
 ---
 
 # Test Case Template
