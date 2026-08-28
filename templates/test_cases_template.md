@@ -1,7 +1,7 @@
 ---
 name: Test Case Generator
 description: >-
-  Read a JIRA ticket and generate a traceable test case table based on the ticket's summary,
+  For JIRA ticket generate a traceable test case table based on the ticket's summary,
   description and acceptance criteria, output in the required format by following said rules.
 ---
 

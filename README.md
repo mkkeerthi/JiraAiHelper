@@ -58,7 +58,7 @@ Groq-hosted LLMs. It has two modes:
      `yourcompany.atlassian.net`)
    - **Jira email** — the account email for your Jira Cloud site
    - **Jira API token** — create one at https://id.atlassian.com/manage-profile/security/api-tokens
-   - **Groq (free account) API key** — from https://console.groq.com/keys
+   - **Groq (create a free account) API key** — from https://console.groq.com/keys
 
 4. **Run the app**
 

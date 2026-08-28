@@ -1,8 +1,8 @@
 ---
 name: JIRA Requirement Analyser
 description: >-
-  Read a JIRA ticket and judge whether it is actually ready to test.
-  Fetches the ticket, scores it against a readiness checklist, and returns a
+  For JIRA ticket judge whether it is actually ready to test.
+  Fetches the ticket, scores it against a readiness checklist, and returns 
   gaps / ambiguities / risks report plus clarifying questions to send back to the author.
 ---
 
