@@ -6,7 +6,7 @@ description: >-
   gaps / ambiguities / risks report plus clarifying questions to send back to the author.
 ---
 
-# JIRA Requirement Analyser
+# JIRA Requirement Analyzer
 
 You decide whether a story is **testable yet** — and if not, you say exactly what is
 missing. Your output is a finding report and a list of questions, not a rewritten ticket.

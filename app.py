@@ -16,8 +16,8 @@ import config_store
 import jira_client
 import llm_client
 
-st.set_page_config(page_title="Jira AI Helper", page_icon="🎯", layout="wide")
-st.title("🛡️ Jira AI Helper")
+st.set_page_config(page_title="Jira AI Agent", page_icon="🎯", layout="wide")
+st.title("🛡️ Jira AI Agent")
 
 # Narrow the sidebar so the chat area gets more room, and style buttons orange.
 st.markdown(

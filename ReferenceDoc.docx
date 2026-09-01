@@ -1,0 +1,72 @@
+Using Analyse Requirement option –
+Screenshot
+ 
+I created a Jira work item about Forgot Password functionality with a very high level detail like this
+A registered user can click on Forgot Password link if he does not remember the password. He will be sent a Reset Password link to his email address. On clicking Reset Password link the user is redirected to Reset Password page where he has to enter his new password, re-enter password and click Save button.
+I ran the tool by selecting LLM as qwen 3.6 27b, this is the output it gave
+## Requirement Analysis — SCRUM-1: Forgot Password Functionality Readiness verdict: NOT READY (5 blockers) Gaps [ ❌ Acceptance Criteria section is completely empty. ❌ No password complexity/policy defined. ❌ No error handling or validation rules specified (e.g., mismatched passwords, invalid email format). ❌ No security requirements stated (link expiration, rate limiting, token invalidation after use). ❌ No success/failure feedback states defined. ] Ambiguities [ ⚠️ "User" role undefined — does this apply to all registered accounts, or exclude locked/suspended accounts? ⚠️ Email delivery expectations unclear — is there a timeout, retry mechanism, or fallback if the email service fails? ⚠️ "Save button" behavior unspecified — does it redirect to login, show a success banner, or keep the user on the page? ⚠️ Link validity period unknown — does the reset link expire after a set time or after a single use? ] Risks [ 🔴 HIGH: Security exposure if reset links never expire or can be reused. 🔴 HIGH: Account lockout/brute-force risk if no rate limiting on "Forgot Password" requests. 🟡 MEDIUM: Poor UX and support ticket volume if no clear success/error messages are shown. 🟡 MEDIUM: Broken flow if email dependency fails with no user-facing fallback. ] Questions for the author (numbered, one topic each) 1. What are the exact password complexity requirements (length, character types, history) that the new password must meet? 2. How long should the reset link remain valid, and should it be invalidated after a single successful use? 3. What rate-limiting or CAPTCHA measures should apply to the "Forgot Password" request to prevent abuse? 4. What specific error messages should display for: (a) email not found, (b) expired/invalid link, (c) password mismatch, (d) password fails policy? 5. What is the expected user flow after clicking "Save" on success (e.g., redirect to login, show confirmation modal, auto-logout other sessions)? 6. Should the system send a confirmation email upon successful password reset, and if so, what should it contain? 7. Are there any account states (e.g., locked, suspended, unverified) that should block the forgot password flow? --- HUMAN REVIEW GATE --- Assumptions / What I could not confirm: I assumed standard web app behavior (HTTP redirects, email delivery via third-party service, client-side + server-side validation) but the ticket provides zero technical or UX constraints. I could not confirm backend dependencies, email provider SLAs, or existing password policies referenced elsewhere. Confirm before I send these to the author: Please verify that the gaps/ambiguities above accurately reflect what's missing from SCRUM-1. If any item is intentionally out of scope or covered in a linked ticket/attachment, let me know so I can adjust the questions. Once confirmed, I will finalize this for handoff to the author
+Based on the AI feedback I updated the Jira work item by adding Acceptance Criteria, Error/Empty/Boundary States and Password Policy details like this
+
+A registered user can click on Forgot Password link if he does not remember the password. He will be sent a Reset Password link to his email address. On clicking Reset Password link the user is redirected to Reset Password page where he has to enter his new password, re-enter password and click Save button.
+
+Acceptance Criteria
+•	Forgot Password Link & Email Dispatch: Clicking the "Forgot Password" link on the login page must immediately trigger a password reset email to the user's registered email address.
+•	Email Reset Link & Redirection: Clicking the reset link inside the email must redirect the user directly to the "Reset Password" page.
+•	New Password Submission: The "Reset Password" page must provide input fields for New Password and Re-enter Password, alongside a Save button.
+•	Successful Password Update: Submitting matching passwords and clicking Save must update the user's password in the system and confirm success.
+•	Validation & Error Handling:
+o	Entering non-matching values in the New Password and Re-enter Password fields must prevent submission and display a mismatch error.
+o	Attempting to submit empty password fields must trigger required-field validation errors.
+•	Link Lifecycle & Security: Once a password reset link has been used to successfully update a password, it must expire and prevent further use.
+
+Error/Empty/Boundary States:
+1.	If email doesn’t exist: Application will not check for email validity. It is beyond the scope.
+2.	If link expires: It is beyond scope.
+3.	If passwords do not match: Application will show a validation message that password do not match, please check.
+Password Policy: The password should be minimum 8 characters in length. It has to be a combination of atleast 1 lowercase string character, atleast 1 uppercase string character, atleast 1 numeric and atleast 1 special character.
+This time I ran the tool by selecting a newer LLM qwen 3.8 27b, this is the output it gave which  seems better in terms of requirement completeness, but still need to fill the gaps
+Readiness verdict: NOT READY (5 blockers)
+Gaps [ ❌ ]
+1.	Missing Success State Definition: The ticket states "confirm success" but does not define how. Does the user see a toast notification? Are they redirected to the login page? Is the session automatically logged in? Without this, the "Successful Password Update" AC is untestable.
+2.	Missing Link Expiration Logic: The ticket explicitly states "If link expires: It is beyond scope" in the Error/Empty/Boundary section, yet the "Link Lifecycle & Security" AC states the link "must expire and prevent further use." This is a direct contradiction. If expiration is out of scope, the security AC is invalid. If it is in scope, the boundary condition (what happens when an expired link is clicked) is missing.
+3.	Missing Email Content Specification: The ticket mentions a "Reset Password link" is sent, but does not specify the email subject line, body content, or whether the link contains a token. Testers cannot verify the email dispatch without knowing what to look for.
+4.	Missing Rate Limiting/Security Controls: No mention of throttling the "Forgot Password" endpoint. This is a critical security gap for a password reset flow (prevents user enumeration and brute-force attacks).
+5.	Missing Input Field Constraints: The "New Password" field requirements are defined (min 8 chars, complexity), but there is no mention of a maximum length for the password field. Standard practice is 64-128 chars. Without a max length, boundary testing is undefined.
+Ambiguities [ ⚠️ ]
+1.	"Immediately trigger" vs. Asynchronous Processing:
+o	Reading A: The email is sent synchronously before the UI responds (user waits for email send).
+o	Reading B: The UI responds immediately with a generic message ("If an account exists..."), and the email is sent asynchronously in the background.
+o	Impact: Changes how we test the "immediate" trigger and error handling for email service failures.
+2.	"Registered email address" vs. "Email validity check":
+o	The ticket says "Application will not check for email validity. It is beyond the scope."
+o	Ambiguity: Does this mean the system accepts any string in the email field (e.g., "not-an-email") and attempts to send? Or does it mean the system doesn't validate if the email exists in the DB (i.e., no user enumeration)?
+o	Impact: If the former, we need to test invalid email formats. If the latter, we need to test that no error is shown for non-existent emails.
+3.	"Save button" behavior on failure:
+o	The ticket says "prevent submission and display a mismatch error."
+o	Ambiguity: Does the form stay on the same page with the error? Or does it redirect? Does the focus move to the error field?
+o	Impact: Affects UI/UX testing and accessibility (a11y) checks.
+Risks [ impact-rated ]
+1.	HIGH: Security Vulnerability (User Enumeration): If the system behaves differently for existing vs. non-existing emails (e.g., "Email not found" vs. "Check your inbox"), attackers can enumerate valid users. The ticket's "beyond scope" note on email validity is dangerous if interpreted as "no validation at all."
+2.	HIGH: Broken Security AC: The contradiction between "link expires" (AC) and "link expiration out of scope" (Boundary) means the security requirement is either untestable or undefined. If the link doesn't expire, it's a critical security flaw.
+3.	MEDIUM: Poor UX/Confusion: Without a clear success state (redirect vs. toast), users may not know if their password was changed, leading to support tickets.
+4.	MEDIUM: Email Deliverability: No mention of SPF/DKIM/DMARC or email provider integration. If the email service fails, there is no defined fallback or error message for the user.
+Questions for the author (numbered, one topic each)
+1.	Success State: After a successful password reset, what exactly happens? (e.g., "Redirect to login page with a green toast: 'Password updated successfully'")
+2.	Link Expiration: Is the password reset link expiration in scope or out of scope? The AC says it must expire, but the boundary section says it's out of scope. Please clarify.
+3.	Email Content: What is the expected subject line and body of the reset email? Does it contain a unique token?
+4.	Email Validation: When a user enters an invalid email format (e.g., "abc@") in the Forgot Password field, what should happen? (e.g., "Show client-side validation error" or "Submit and show generic message")
+5.	Non-Existent Email: If a user enters a valid email format that does not exist in the system, what message should be shown? (e.g., "If an account exists for this email, a reset link has been sent")
+6.	Password Max Length: What is the maximum allowed length for the new password?
+7.	Rate Limiting: Is there a rate limit on the Forgot Password endpoint? (e.g., "Max 5 requests per minute per IP")
+8.	Error Display: When a password mismatch occurs, where is the error message displayed? (e.g., "Below the Re-enter Password field in red text")
+--- HUMAN REVIEW GATE --- Assumptions / What I could not confirm:
+•	I assumed the "Forgot Password" link is on the login page, as stated in the description.
+•	I assumed the "Reset Password" page is a separate page, not a modal, based on the phrase "redirected to Reset Password page."
+•	I could not confirm the email provider or infrastructure details.
+Confirm before I send these to the author: Please review the 8 questions above. Are they specific enough? Do you want to add any questions about accessibility (e.g., screen reader support for error messages) or internationalization (e.g., email language)? Once you confirm, I will finalize the report.
+Using Generate Test Cases option –
+ 
+ 
+
+Settings Screen
+ 
